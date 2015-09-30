@@ -1,4 +1,4 @@
-package com.morristaedt.mirror.modules;
+package com.morristaedt.mirror.modules.Forecast;
 
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -21,13 +21,7 @@ import retrofit.RetrofitError;
  */
 public class ForecastModule {
 
-    public interface ForecastListener {
-        void onWeatherToday(String weatherToday);
-
-        void onShouldBike(boolean showToday, boolean shouldBike);
-    }
-
-    public static void getHourlyForecast(final Resources resources, final double lat, final double lon, final ForecastListener listener) {
+    public static void getHourlyForecast(final Resources resources, final ForecastListener listener) {
         new AsyncTask<Void, Void, ForecastResponse>() {
 
             @Override
@@ -47,7 +41,10 @@ public class ForecastModule {
                 String excludes = "minutely,daily,flags";
                 String units = "si";
                 Log.d("mirror", "backgrounddd");
-                return service.getHourlyForecast(resources.getString(R.string.dark_sky_api_key), lat, lon, excludes, units);
+                ForecastResponse hourlyForecast = service.getHourlyForecast(resources.getString(R.string.dark_sky_api_key),
+                        Double.parseDouble(resources.getString(R.string.home_lat)),
+                        Double.parseDouble(resources.getString(R.string.home_lon)), excludes, units);
+                return hourlyForecast;
             }
 
             @Override
@@ -55,6 +52,7 @@ public class ForecastModule {
                 if (forecastResponse != null) {
                     if (forecastResponse.currently != null) {
                         listener.onWeatherToday(forecastResponse.currently.getDisplayTemperature() + " " + forecastResponse.currently.summary);
+                        listener.setIcon(forecastResponse.currently.icon);
                     }
 
                     if (WeekUtil.isWeekday() && !WeekUtil.afterFive() && forecastResponse.hourly != null && forecastResponse.hourly.data != null) {

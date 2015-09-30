@@ -17,6 +17,7 @@ public class ForecastResponse {
     public class ForecastCurrently {
         public String summary;
         public float temperature;
+        public String icon;
 
         public String getDisplayTemperature() {
             return String.valueOf(Math.round(temperature)) + (char) 0x00B0;
