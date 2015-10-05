@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.morristaedt.mirror.R;
 import com.morristaedt.mirror.requests.ForecastRequest;
 import com.morristaedt.mirror.requests.ForecastResponse;
@@ -11,21 +12,22 @@ import com.morristaedt.mirror.utils.WeekUtil;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Observable;
 
 import retrofit.ErrorHandler;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
+import retrofit.converter.GsonConverter;
 
 /**
  * Created by HannahMitt on 8/22/15.
  */
-public class ForecastModule {
-
-    public static void getHourlyForecast(final Resources resources, final ForecastListener listener) {
+public class ForecastModule extends Observable {
+    public void getHourlyForecast(final Resources resources) {
         new AsyncTask<Void, Void, ForecastResponse>() {
-
             @Override
             protected ForecastResponse doInBackground(Void... params) {
+                Gson gson = new GsonUnixTimestapConverter().createConverter();
                 RestAdapter restAdapter = new RestAdapter.Builder()
                         .setEndpoint("https://api.forecast.io")
                         .setErrorHandler(new ErrorHandler() {
@@ -34,11 +36,10 @@ public class ForecastModule {
                                 Log.w("mirror", "Forecast error: " + cause);
                                 return null;
                             }
-                        })
+                        }).setConverter(new GsonConverter(gson))
                         .build();
-
                 ForecastRequest service = restAdapter.create(ForecastRequest.class);
-                String excludes = "minutely,daily,flags";
+                String excludes = "minutely,flags";
                 String units = "si";
                 Log.d("mirror", "backgrounddd");
                 ForecastResponse hourlyForecast = service.getHourlyForecast(resources.getString(R.string.dark_sky_api_key),
@@ -50,44 +51,10 @@ public class ForecastModule {
             @Override
             protected void onPostExecute(ForecastResponse forecastResponse) {
                 if (forecastResponse != null) {
-                    if (forecastResponse.currently != null) {
-                        listener.onWeatherToday(forecastResponse.currently.getDisplayTemperature() + " " + forecastResponse.currently.summary);
-                        listener.setIcon(forecastResponse.currently.icon);
-                    }
-
-                    if (WeekUtil.isWeekday() && !WeekUtil.afterFive() && forecastResponse.hourly != null && forecastResponse.hourly.data != null) {
-                        listener.onShouldBike(true, shouldBikeToday(forecastResponse.hourly.data));
-                    } else {
-                        listener.onShouldBike(false, true);
-                    }
+                    setChanged();
+                    notifyObservers(new ForecastModel(forecastResponse));
                 }
             }
-
-            private boolean shouldBikeToday(List<ForecastResponse.Hour> hours) {
-                int dayOfMonthToday = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-
-                for (ForecastResponse.Hour hour : hours) {
-                    Calendar hourCalendar = hour.getCalendar();
-
-                    // Only check hourly forecast for today
-                    if (hourCalendar.get(Calendar.DAY_OF_MONTH) == dayOfMonthToday) {
-                        int hourOfDay = hourCalendar.get(Calendar.HOUR_OF_DAY);
-                        Log.i("mirror", "Hour of day is " + hourOfDay + " with precipProb " + hour.precipProbability);
-                        if (hourOfDay >= 7 && hourOfDay <= 11) {
-                            if (hour.precipProbability >= 0.3) {
-                                return false;
-                            }
-                        } else if (hourOfDay >= 17 && hourOfDay <= 19) {
-                            if (hour.precipProbability >= 0.3) {
-                                return false;
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-        }.execute();
-
+        };
     }
 }
