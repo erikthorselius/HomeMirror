@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <FrameLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        >
+
+        <com.thbs.skycons.library.CloudView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:bgColor="#000000"
+            app:isStatic="false"
+            app:strokeColor="#ffffff" />
+    </FrameLayout>
+
+    <TextView
+        style="@style/MirrorTextSmall"
+        android:id="@+id/temp_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/icon_container"
+        android:layout_centerInParent="true"
+        android:text="25&#xb0;/5&#xb0;" />
+
+
+    <TextView
+        style="@style/MirrorTextSmall"
+        android:id="@+id/day_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/temp_text"
+        android:layout_centerInParent="true"
+        android:text="S" />
+</RelativeLayout>
