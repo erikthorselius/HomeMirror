@@ -1,60 +1,59 @@
 package com.morristaedt.mirror.modules.Forecast;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.morristaedt.mirror.R;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ForecastFragment extends Fragment {
-    public enum Icons {CLOUD,WIND}
+    ForecastModule forecastModule;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        forecastModule = new ForecastModule();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.forecast_big_fragment, createBigForecastFragment());
+        fragmentTransaction.add(R.id.forecast_small_fragment_1, getSmallForecastFragment(1));
+        fragmentTransaction.add(R.id.forecast_small_fragment_2, getSmallForecastFragment(2));
+        fragmentTransaction.add(R.id.forecast_small_fragment_3, getSmallForecastFragment(3));
+        fragmentTransaction.add(R.id.forecast_small_fragment_4, getSmallForecastFragment(4));
+        fragmentTransaction.add(R.id.forecast_small_fragment_5, getSmallForecastFragment(5));
+        fragmentTransaction.commit();
+    }
+
+    @NonNull
+    private SmallForecastFragment getSmallForecastFragment(int dayOffset) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("dayOffset", dayOffset);
+        SmallForecastFragment smallForecastFragment = new SmallForecastFragment();
+        smallForecastFragment.setArguments(bundle);
+        forecastModule.addObserver(smallForecastFragment);
+        return smallForecastFragment;
+    }
+
+    private Fragment createBigForecastFragment() {
+        BigForecastFragment bigForecastFragment = new BigForecastFragment();
+        forecastModule.addObserver(bigForecastFragment);
+        return bigForecastFragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.forecast_layout, container, false);
+        return inflater.inflate(R.layout.forecast_module_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        TextView weatherText = (TextView) getView().findViewById(R.id.weather_summary);
-
-        View clearNight = (View)getView().findViewById(R.id.clear_night);
-        View clearDay = (View)getView().findViewById(R.id.clear_day);
-        View rain = (View)getView().findViewById(R.id.rain);
-        View snow = (View)getView().findViewById(R.id.snow);
-        View sleet = (View)getView().findViewById(R.id.sleet);
-        View wind = (View)getView().findViewById(R.id.wind);
-        View fog = (View)getView().findViewById(R.id.fog);
-        View cloudy = (View)getView().findViewById(R.id.cloudy);
-        View partlyCloudyDay = (View)getView().findViewById(R.id.partly_cloudy_day);
-        View partlyCloudyNight = (View)getView().findViewById(R.id.partly_cloudy_night);
-        View thunder = (View)getView().findViewById(R.id.thunder);
-
-        Map<String, View> icons = new HashMap<>();
-        icons.put("clear-night", clearNight);
-        icons.put("clear-day", clearDay);
-        icons.put("rain", rain);
-        icons.put("snow", snow);
-        icons.put("sleet", sleet);
-        icons.put("wind", wind);
-        icons.put("fog", fog);
-        icons.put("cloudy", wind);
-        icons.put("partly-cloudy-day", partlyCloudyDay);
-        icons.put("partly-cloudy-night", partlyCloudyNight);
-        icons.put("thunder", thunder);
-
-        ForecastModule.getHourlyForecast(getResources(), new ForecastListener(weatherText, icons));
+        forecastModule.getHourlyForecast(getResources());
     }
 }
