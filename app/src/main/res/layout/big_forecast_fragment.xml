@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/icon_container">
+
+        <com.thbs.skycons.library.SunView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:bgColor="#000000"
+            app:isStatic="false"
+            app:strokeColor="#ffffff" />
+    </FrameLayout>
+
+        <TextView
+            android:id="@+id/big_text"
+            style="@style/MirrorTextBig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/icon_container"
+            android:text="20&#xb0;" />
+
+        <TextView
+            android:id="@+id/small_text"
+            style="@style/MirrorTextSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/big_text"
+            android:layout_toRightOf="@+id/icon_container"
+            android:layout_centerInParent="true"
+            android:text="20&#xb0;/20&#xb0;" />
+</RelativeLayout>
