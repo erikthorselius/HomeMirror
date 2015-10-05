@@ -1,32 +1,25 @@
 package com.morristaedt.mirror;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.morristaedt.mirror.modules.BirthdayModule;
 import com.morristaedt.mirror.modules.ChoresModule;
 import com.morristaedt.mirror.modules.DayModule;
 import com.morristaedt.mirror.modules.Forecast.ForecastFragment;
-import com.morristaedt.mirror.modules.Forecast.ForecastListener;
-import com.morristaedt.mirror.modules.Forecast.ForecastModule;
 import com.morristaedt.mirror.modules.XKCDModule;
 import com.morristaedt.mirror.modules.YahooFinanceModule;
+import com.morristaedt.mirror.modules.sl.SlFragment;
 import com.morristaedt.mirror.requests.YahooStockResponse;
 import com.morristaedt.mirror.utils.WeekUtil;
 import com.squareup.picasso.Picasso;
@@ -38,12 +31,10 @@ public class MirrorActivity extends ActionBarActivity {
     private TextView mBirthdayText;
     private TextView mDayText;
     private View mHelloText;
-    private TextView mBikeTodayText;
     private TextView mStockText;
     private View mWaterPlants;
     private View mGroceryList;
     private ImageView mXKCDImage;
-    private FrameLayout forecastPlaceholder;
 
     private XKCDModule.XKCDListener mXKCDListener = new XKCDModule.XKCDListener() {
         @Override
@@ -90,10 +81,8 @@ public class MirrorActivity extends ActionBarActivity {
         mHelloText = (TextView) findViewById(R.id.hello_text);
         mWaterPlants = findViewById(R.id.water_plants);
         mGroceryList = findViewById(R.id.grocery_list);
-        mBikeTodayText = (TextView) findViewById(R.id.can_bike);
         mStockText = (TextView) findViewById(R.id.stock_text);
         mXKCDImage = (ImageView) findViewById(R.id.xkcd_image);
-        forecastPlaceholder = (FrameLayout) findViewById(R.id.forcast_layout_placeholder);
 
         //Negative of XKCD image
         float[] colorMatrixNegative = {
@@ -130,11 +119,10 @@ public class MirrorActivity extends ActionBarActivity {
         mWaterPlants.setVisibility(ChoresModule.waterPlantsToday() ? View.VISIBLE : View.GONE);
         mGroceryList.setVisibility(ChoresModule.makeGroceryListToday() ? View.VISIBLE : View.GONE);
 
-        //inflater.inflate(R.layout.forecast_layout, forecastPlaceholder);
+        //inflater.inflate(R.layout.forecast_module_fragment, forecastPlaceholder);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment fragment = new ForecastFragment();
-        fragmentTransaction.add(R.id.forcast_layout_placeholder, fragment);
+        fragmentTransaction.add(R.id.forecast_module,new ForecastFragment());
         fragmentTransaction.commit();
 
         XKCDModule.getXKCDForToday(mXKCDListener);
@@ -148,7 +136,6 @@ public class MirrorActivity extends ActionBarActivity {
 
     private void showDemoMode() {
         if (DEMO_MODE) {
-            mBikeTodayText.setVisibility(View.VISIBLE);
             mStockText.setVisibility(View.VISIBLE);
             mWaterPlants.setVisibility(View.VISIBLE);
             mGroceryList.setVisibility(View.VISIBLE);

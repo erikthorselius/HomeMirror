@@ -31,6 +31,11 @@
         android:padding="0dp"
         android:textSize="90sp" />
 
+    <FrameLayout
+        android:id="@+id/forecast_module"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <ImageView
         android:id="@+id/xkcd_image"
         android:layout_width="wrap_content"
@@ -44,11 +49,6 @@
         android:layout_marginTop="60dp"
         android:gravity="right"
         android:orientation="vertical">
-
-        <FrameLayout
-            android:id="@+id/forcast_layout_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/hello_text"
