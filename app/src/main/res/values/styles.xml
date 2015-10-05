@@ -15,8 +15,16 @@
         <item name="android:gravity">right|center_vertical</item>
         <item name="android:drawablePadding">8dp</item>
     </style>
-
+    <style name="MirrorTextSmall" parent="MirrorText">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="MirrorTextBig" parent="MirrorText">
+        <item name="android:textSize">100sp</item>
+    </style>
     <style name="MirrorListText" parent="MirrorText">
         <item name="android:paddingBottom">20dp</item>
+    </style>
+    <style name="ForecastIcons" >
+        <item name="isStatic">true</item>
     </style>
 </resources>
